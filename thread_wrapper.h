@@ -33,6 +33,10 @@ void Cond_signal(pthread_cond_t *c) {
     assert(rc == 0);
 }
 
+void Cond_broadcast(pthread_cond_t *c){
+    int rc = pthread_cond_broadcast(c);
+    assert(rc == 0);
+}
 
 void Pthread_create(pthread_t *thread, const pthread_attr_t *attr, 	
 		    void *(*start_routine)(void*), void *arg) {
