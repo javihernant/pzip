@@ -9,6 +9,8 @@
 
 
 #define MAX_FILES 10
+#define CHUNK_SIZE 4
+#define min(x,y) ((x)<(y) ? x : y)
 
 struct global_idx{
     int idx; /* index of the next chunk that has to be pushed to the global buffer */
@@ -71,19 +73,22 @@ void *thread(void *arg)
     int idx;
     unsigned char *ptr;
     off_t rmng;
-    
-    Mutex_lock(&fi->lock);
-    ptr = fi->next_ptrs[0];
-    idx = fi->chunk_idx;
-    fi->chunk_idx++;
-    rmng = fi->remaining[0];
-
-    fi->next_ptrs[0] += 4;
-    fi->remaining[0] -= 4;
-    Mutex_unlock(&fi->lock); 
-
-    //work(ptr, rmng);
-    push_to_buff(fi->gidx, idx);
+    int fidx = 0; /* file index */
+   
+    for(;;){
+        Mutex_lock(&fi->lock);
+        ptr = fi->next_ptrs[0];
+        idx = fi->chunk_idx;
+        fi->chunk_idx++;
+        rmng = fi->remaining[0];
+        off_t offset = min(rmng, CHUNK_SIZE); 
+        fi->next_ptrs[fidx] += offset;
+        fi->remaining[fidx] -= offset;
+        Mutex_unlock(&fi->lock); 
+        if(rmng==0) break; /*TODO: if rmng==0 , see if there's a next page, then switch to it */
+        work(ptr, offset);
+        push_to_buff(fi->gidx, idx);
+    } 
     return NULL;
 }
 
