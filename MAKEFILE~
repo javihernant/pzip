@@ -1,0 +1,2 @@
+all:
+        gcc -pthread ppzip.c -o ppzip -Wall -Werror -O
