@@ -56,5 +56,4 @@ void ensure(int expression, char *msg) {
     }
 }
 
-
 #endif // __THREAD_WRAPPER_h__

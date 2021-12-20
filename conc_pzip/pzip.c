@@ -190,7 +190,7 @@ void *thread(void *arg)
 int main(int argc, char *argv[])
 {
     if(argc <= 1){
-		printf("pzip: file1 [file2 ...]\n");
+		printf("wzip: file1 [file2 ...]\n");
 		exit(1);
    	}
 
